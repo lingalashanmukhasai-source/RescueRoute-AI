@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>RescueRoute AI</title>
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<link
+rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}"
+>
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+<a class="brand" href="#">
+
+<span>🛡️</span>
+
+<div>
+
+<b>
+RescueRoute <em>AI</em>
+</b>
+
+<small>
+DISASTER-SAFE NAVIGATION
+</small>
+
+</div>
+
+</a>
+
+
+<nav>
+
+<a href="#planner">
+Planner
+</a>
+
+<a href="#mapSection">
+Live Map
+</a>
+
+<a href="#alerts">
+Alerts
+</a>
+
+<a href="#technology">
+Technology
+</a>
+
+</nav>
+
+
+<div class="topActions">
+
+<span id="userLabel"></span>
+
+<button
+class="dangerBtn"
+onclick="openEmergency()"
+>
+🚨 Emergency
+</button>
+
+</div>
+
+</header>
+
+
+
+<main>
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="heroText">
+
+<div class="pill">
+
+<i></i>
+
+AI SAFETY ENGINE ONLINE
+
+</div>
+
+
+<h1>
+
+Find the
+<span>Safest Route.</span>
+
+<br>
+
+Not Just the Fastest.
+
+</h1>
+
+
+<p>
+
+RescueRoute AI combines live weather,
+disaster awareness, geospatial routing
+and emergency facilities to help people
+make safer decisions during climate emergencies.
+
+</p>
+
+
+<div class="actions">
+
+<button
+class="primary"
+onclick="scrollToPlanner()"
+>
+🧭 Find Safe Route
+</button>
+
+
+<button
+class="secondary"
+onclick="locate()"
+>
+📍 Use My Location
+</button>
+
+</div>
+
+
+<div class="trust">
+
+<span>✓ Live weather</span>
+
+<span>✓ Route intelligence</span>
+
+<span>✓ Emergency facilities</span>
+
+</div>
+
+</div>
+
+
+
+<div class="heroPanel">
+
+<div class="radar">
+
+<div></div>
+
+<div></div>
+
+<div>🛡️</div>
+
+</div>
+
+
+<small>
+LIVE SAFETY MONITOR
+</small>
+
+
+<div class="monitor">
+
+<span>
+Weather engine
+</span>
+
+<b>
+ONLINE
+</b>
+
+</div>
+
+
+<div class="monitor">
+
+<span>
+Disaster feed
+</span>
+
+<b>
+LIVE
+</b>
+
+</div>
+
+
+<div class="monitor">
+
+<span>
+Routing engine
+</span>
+
+<b>
+ONLINE
+</b>
+
+</div>
+
+
+<div class="monitor">
+
+<span>
+AI risk engine
+</span>
+
+<b>
+ACTIVE
+</b>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- PLANNER -->
+
+<section
+class="section"
+id="planner"
+>
+
+<div class="sectionHead">
+
+<div>
+
+<small>
+AI ROUTE INTELLIGENCE
+</small>
+
+<h2>
+Plan a Safer Journey
+</h2>
+
+</div>
+
+<p>
+Compare travel conditions before you move.
+</p>
+
+</div>
+
+
+
+<div class="grid2">
+
+
+<div class="card formCard">
+
+<label>
+STARTING LOCATION
+</label>
+
+
+<div class="row">
+
+<input
+id="startText"
+placeholder="Use GPS or enter coordinates"
+>
+
+<button
+class="mini"
+onclick="locate()"
+>
+GPS
+</button>
+
+</div>
+
+
+<label>
+DESTINATION
+</label>
+
+
+<div class="row">
+
+<input
+id="destText"
+placeholder="Example: Vijayawada Railway Station"
+>
+
+<button
+class="mini"
+onclick="geocodeDestination()"
+>
+Find
+</button>
+
+</div>
+
+
+<label>
+DISASTER CONDITION
+</label>
+
+
+<select id="disaster">
+
+<option>Flood</option>
+
+<option>Cyclone</option>
+
+<option>Earthquake</option>
+
+<option>Wildfire</option>
+
+<option>Landslide</option>
+
+<option>Extreme Weather</option>
+
+</select>
+
+
+<button
+class="primary wide"
+onclick="analyze()"
+>
+🤖 Analyze Risk & Find Safer Route
+</button>
+
+
+<div class="hint">
+
+GPS works best when browser location
+permission is allowed.
+
+</div>
+
+</div>
+
+
+
+<div
+class="card"
+id="result"
+>
+
+<div class="empty">
+
+<div>
+🧭
+</div>
+
+<h3>
+Ready for analysis
+</h3>
+
+<p>
+Set your location and destination,
+then let the system evaluate live conditions.
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<!-- MAP -->
+
+<section
+class="section"
+id="mapSection"
+>
+
+<div class="sectionHead">
+
+<div>
+
+<small>
+GEOSPATIAL INTELLIGENCE
+</small>
+
+<h2>
+Live Safety Map
+</h2>
+
+</div>
+
+
+<button
+class="secondary"
+onclick="loadFacilities()"
+>
+🏥 Load Emergency Facilities
+</button>
+
+</div>
+
+
+<div id="map"></div>
+
+
+<div class="mapNote">
+
+Map data © OpenStreetMap contributors.
+Routing via OSRM.
+
+</div>
+
+</section>
+
+
+
+<!-- ALERTS -->
+
+<section
+class="section"
+id="alerts"
+>
+
+<div class="sectionHead">
+
+<div>
+
+<small>
+LIVE DISASTER AWARENESS
+</small>
+
+<h2>
+Global Alerts
+</h2>
+
+</div>
+
+
+<button
+class="secondary"
+onclick="loadAlerts()"
+>
+↻ Refresh
+</button>
+
+</div>
+
+
+<div
+class="alerts"
+id="alertsList"
+>
+
+<div class="loading">
+Loading disaster feed…
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- WEATHER -->
+
+<section class="section">
+
+<div class="sectionHead">
+
+<div>
+
+<small>
+ENVIRONMENTAL INTELLIGENCE
+</small>
+
+<h2>
+Live Weather
+</h2>
+
+</div>
+
+</div>
+
+
+<div
+class="weather card"
+id="weather"
+>
+
+<div class="loading">
+Use your location to load weather.
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- TECHNOLOGY -->
+
+<section
+class="section"
+id="technology"
+>
+
+<div class="techHero">
+
+<small>
+WHY RESCUEROUTE AI?
+</small>
+
+<h2>
+Navigation should understand
+<span>danger.</span>
+</h2>
+
+
+<p>
+
+Traditional navigation focuses mainly
+on distance and travel time.
+
+RescueRoute adds environmental signals,
+disaster awareness, emergency facilities
+and explainable risk scoring.
+
+</p>
+
+</div>
+
+
+
+<div class="flow">
+
+<div>
+
+<b>01</b>
+
+<strong>
+LIVE DATA
+</strong>
+
+<span>
+Weather + disaster feeds
+</span>
+
+</div>
+
+
+<i>
+→
+</i>
+
+
+<div>
+
+<b>02</b>
+
+<strong>
+AI RISK
+</strong>
+
+<span>
+Explainable safety scoring
+</span>
+
+</div>
+
+
+<i>
+→
+</i>
+
+
+<div>
+
+<b>03</b>
+
+<strong>
+SAFE ROUTE
+</strong>
+
+<span>
+Route + emergency access
+</span>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ACCOUNT -->
+
+<section class="section account">
+
+<div class="card accountCard">
+
+<div>
+
+<small>
+PERSONALIZATION
+</small>
+
+<h2>
+Save your analyses
+</h2>
+
+<p>
+Create an account to store your route-risk history.
+</p>
+
+</div>
+
+
+<div class="accountBtns">
+
+<button
+class="secondary"
+onclick="openAuth('login')"
+>
+Login
+</button>
+
+
+<button
+class="primary"
+onclick="openAuth('register')"
+>
+Create Account
+</button>
+
+</div>
+
+</div>
+
+
+
+<div class="card">
+
+<small>
+RECENT ANALYSES
+</small>
+
+<div
+id="history"
+class="history"
+>
+Login to view saved analyses.
+</div>
+
+</div>
+
+</section>
+
+
+</main>
+
+
+
+<footer>
+
+<b>
+🛡️ RescueRoute AI
+</b>
+
+<span>
+AI-powered disaster-safe navigation
+</span>
+
+<span>
+OpenStreetMap • Open-Meteo • USGS • GDACS
+</span>
+
+</footer>
+
+
+
+<!-- EMERGENCY MODAL -->
+
+<div
+class="modal"
+id="emergencyModal"
+>
+
+<div class="modalBox emergencyBox">
+
+<button
+class="x"
+onclick="closeModal('emergencyModal')"
+>
+×
+</button>
+
+
+<div class="alarm">
+🚨
+</div>
+
+
+<h2>
+EMERGENCY MODE
+</h2>
+
+
+<p>
+
+Use this dashboard to locate nearby support.
+Always follow official local emergency instructions.
+
+</p>
+
+
+<div class="emGrid">
+
+<button
+onclick="
+loadFacilities();
+closeModal('emergencyModal');
+document.querySelector('#mapSection').scrollIntoView();
+"
+>
+🏥
+<span>
+Hospitals
+</span>
+</button>
+
+
+<button
+onclick="
+loadFacilities();
+closeModal('emergencyModal');
+document.querySelector('#mapSection').scrollIntoView();
+"
+>
+🏠
+<span>
+Shelters
+</span>
+</button>
+
+
+<button
+onclick="
+locate();
+closeModal('emergencyModal');
+"
+>
+📍
+<span>
+Locate Me
+</span>
+</button>
+
+
+<button
+onclick="
+alert('Call your local emergency service number if you are in immediate danger.')
+"
+>
+☎️
+<span>
+Emergency Help
+</span>
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- AUTH -->
+
+<div
+class="modal"
+id="authModal"
+>
+
+<div class="modalBox">
+
+<button
+class="x"
+onclick="closeModal('authModal')"
+>
+×
+</button>
+
+
+<h2 id="authTitle">
+Login
+</h2>
+
+
+<input
+id="authName"
+placeholder="Name"
+>
+
+
+<input
+id="authEmail"
+placeholder="Email"
+>
+
+
+<input
+id="authPassword"
+type="password"
+placeholder="Password"
+>
+
+
+<button
+class="primary wide"
+onclick="submitAuth()"
+>
+Continue
+</button>
+
+
+<p
+id="authError"
+class="error"
+>
+</p>
+
+
+<button
+class="linkBtn"
+onclick="toggleAuth()"
+>
+Switch Login / Register
+</button>
+
+</div>
+
+</div>
+
+
+
+<script
+src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+></script>
+
+
+<script
+src="{{ url_for('static', filename='app.js') }}"
+></script>
+
+
+</body>
+
+</html>
